@@ -32,13 +32,15 @@ showPage(students, pageNumber);
 // Create and append the pagination links - Creating a function that can do this is a good approach
 const appendPageLinks = (list) => {
   //Remove any exsisting pagination
-  let pageDiv = document.querySelectorAll('div.page');
-  let paginationDiv = document.querySelectorAll('div.pagination');
-  pageDiv.removeChild(paginationDiv);
+  let pageDiv = document.querySelector('div.page');
+  if (document.querySelector('div.pagination') !== null) {
+    let removeDiv = document.querySelector('div.pagination');
+    pageDiv.removeChild(removeDiv);
+  }
   //Find number of pages needed for List
-  let numberOfPages = math.ciel(list.length / itemsPerPage);
+  let numberOfPages = Math.ceil(list.length / itemsPerPage);
   //Create pagination div and append to page div
-  paginationDiv = document.createElement('div');
+  let paginationDiv = document.createElement('div');
   paginationDiv.setAttribute('class', 'pagination');
   pageDiv.appendChild(paginationDiv);
   //Create and append ul element to pagination div
@@ -48,11 +50,13 @@ const appendPageLinks = (list) => {
   for (let i = 0; i < numberOfPages; i += 1) {
     let li = document.createElement('li');
     let a = document.createElement('a');
+    a.textContent = i + 1;
     ul.appendChild(li);
     li.appendChild(a);
   }
 }
 
+appendPageLinks(students);
 
 
 // Add functionality to the pagination buttons so that they show and hide the correct items
