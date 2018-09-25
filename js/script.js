@@ -6,6 +6,7 @@ FSJS project 2 - List Filter and Pagination
 // Add variables that store DOM elements you will need to reference and/or manipulate
 const students = document.querySelectorAll('li.student-item.cf');
 const studentDetails = document.querySelectorAll('div.student-details');
+const pageDiv = document.querySelector('div.page');
 const pageHeaderDiv = document.querySelector('div.page-header.cf');
 const itemsPerPage = 10;
 let pageNumber = 1;
@@ -35,7 +36,6 @@ showPage(students, pageNumber);
 // Create and append the pagination links - Creating a function that can do this is a good approach
 const appendPageLinks = (list) => {
   //Remove any exsisting pagination
-  let pageDiv = document.querySelector('div.page');
   if (document.querySelector('div.pagination') !== null) {
     let removeDiv = document.querySelector('div.pagination');
     pageDiv.removeChild(removeDiv);
@@ -58,7 +58,7 @@ const appendPageLinks = (list) => {
     li.appendChild(a);
   }
   //Give the first anchor tag the 'active' class
-  if (document.querySelectorAll('a') !== null) {
+  if (list.length > 0) {
     let a = document.querySelectorAll('a');
     a[0].className = 'active';
   }
@@ -90,6 +90,11 @@ searchButton.textContent = 'Search';
 pageHeaderDiv.appendChild(searchDiv);
 searchDiv.appendChild(searchInput);
 searchDiv.appendChild(searchButton);
+let noResults = document.createElement('p');
+noResults.className = 'no-results';
+noResults.textContent = '';
+pageDiv.appendChild(noResults);
+
 
 //Search functionality
 const searchFunction = (results, students, studentDetails) => {
@@ -102,6 +107,11 @@ const searchFunction = (results, students, studentDetails) => {
       students[i].style.display = 'none';
     }
   }
+  if (searchInput.value !== null && results.length === 0) {
+    noResults.textContent = 'No results.';
+  } else {
+    noResults.textContent = '';
+    }
   pageNumber = 1;
   showPage(results, pageNumber);
   appendPageLinks(results);
