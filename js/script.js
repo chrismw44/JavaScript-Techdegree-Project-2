@@ -3,18 +3,37 @@ Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
 ******************************************/
 
-// Add variables that store DOM elements you will need to reference and/or manipulate
+//variables that store DOM elements to be referenced and/or manipulated
 const students = document.querySelectorAll('li.student-item.cf');
 const studentDetails = document.querySelectorAll('div.student-details');
 const pageDiv = document.querySelector('div.page');
 const pageHeaderDiv = document.querySelector('div.page-header.cf');
 const itemsPerPage = 10;
 let pageNumber = 1;
-let results = [];
-let searchCounter = 0;
 
-// Create a function to hide all of the items in the list excpet for the ten you want to show
-// Tip: Keep in mind that with a list of 54 studetns, the last page will only display four
+//Variables created for the search box
+const searchDiv = document.createElement('div');
+const searchInput = document.createElement('input');
+const searchButton = document.createElement('button');
+let results = [];
+let noResults = document.createElement('p');
+
+
+
+//Modification of the search box elements and adding the search box to the page
+searchDiv.className = 'student-search';
+searchInput.placeholder = 'Search for students...';
+searchButton.textContent = 'Search';
+pageHeaderDiv.appendChild(searchDiv);
+searchDiv.appendChild(searchInput);
+searchDiv.appendChild(searchButton);
+noResults.className = 'no-results';
+noResults.textContent = '';
+pageDiv.appendChild(noResults);
+
+
+
+// A function to hide all of the items in the list excpet for the ten to be shown
 const showPage = (list, page) => {
   //Find the first and last students to display on the page
   let firstPageIndex = (page*10) - 10;
@@ -29,11 +48,13 @@ const showPage = (list, page) => {
   }
 }
 
+
 //Shows page 1 when the page loads
 showPage(students, pageNumber);
 
 
-// Create and append the pagination links - Creating a function that can do this is a good approach
+
+// A function to create and append the pagination links
 const appendPageLinks = (list) => {
   //Remove any exsisting pagination
   if (document.querySelector('div.pagination') !== null) {
@@ -62,7 +83,6 @@ const appendPageLinks = (list) => {
     let a = document.querySelectorAll('a');
     a[0].className = 'active';
   }
-
   //Event listener to display the correct students when anchor tags are clicked
   paginationDiv.addEventListener('click', (event) => {
     if (event.target.tagName == 'A') {
@@ -78,27 +98,17 @@ const appendPageLinks = (list) => {
   });
 }
 
+
+//Add pagination to the page
 appendPageLinks(students);
 
-//Create search box and button
-const searchDiv = document.createElement('div');
-searchDiv.className = 'student-search';
-const searchInput = document.createElement('input');
-searchInput.placeholder = 'Search for students...';
-const searchButton = document.createElement('button');
-searchButton.textContent = 'Search';
-pageHeaderDiv.appendChild(searchDiv);
-searchDiv.appendChild(searchInput);
-searchDiv.appendChild(searchButton);
-let noResults = document.createElement('p');
-noResults.className = 'no-results';
-noResults.textContent = '';
-pageDiv.appendChild(noResults);
 
 
-//Search functionality
+//A function to search the students
 const searchFunction = (results, students, studentDetails) => {
+  //Empty results array
   results = [];
+  //Add students who match search criteria to results array and hide those who don't
   for (let i = 0; i < students.length; i += 1) {
     if (studentDetails[i].textContent.toUpperCase().indexOf(searchInput.value.toUpperCase()) !== -1) {
       results.push(students[i]);
@@ -107,20 +117,27 @@ const searchFunction = (results, students, studentDetails) => {
       students[i].style.display = 'none';
     }
   }
+  //Display 'No results' message if no student matches search criteria
   if (searchInput.value !== null && results.length === 0) {
     noResults.textContent = 'No results.';
   } else {
     noResults.textContent = '';
     }
+  //Add pagination to search results
   pageNumber = 1;
   showPage(results, pageNumber);
   appendPageLinks(results);
 }
 
+
+
+//listener to filter results in real time as user enters input
 searchInput.addEventListener('keyup', () => {
   searchFunction(results, students, studentDetails);
 });
 
+
+//Listener to search when the search button is clicked
 searchButton.addEventListener('click', () => {
   searchFunction(results, students, studentDetails);
 });
