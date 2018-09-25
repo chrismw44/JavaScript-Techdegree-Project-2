@@ -5,9 +5,12 @@ FSJS project 2 - List Filter and Pagination
 
 // Add variables that store DOM elements you will need to reference and/or manipulate
 const students = document.querySelectorAll('li.student-item.cf');
+const studentDetails = document.querySelectorAll('div.student-details');
+const pageHeaderDiv = document.querySelector('div.page-header.cf');
 const itemsPerPage = 10;
 let pageNumber = 1;
-
+let results = [];
+let searchCounter = 0;
 
 // Create a function to hide all of the items in the list excpet for the ten you want to show
 // Tip: Keep in mind that with a list of 54 studetns, the last page will only display four
@@ -41,12 +44,12 @@ const appendPageLinks = (list) => {
   let numberOfPages = Math.ceil(list.length / itemsPerPage);
   //Create pagination div and append to page div
   let paginationDiv = document.createElement('div');
-  paginationDiv.setAttribute('class', 'pagination');
+  paginationDiv.className = 'pagination';
   pageDiv.appendChild(paginationDiv);
   //Create and append ul element to pagination div
   let ul = document.createElement('ul');
   paginationDiv.appendChild(ul);
-  //Add li and a elements for every page
+  //Add li and anchor elements for every page
   for (let i = 0; i < numberOfPages; i += 1) {
     let li = document.createElement('li');
     let a = document.createElement('a');
@@ -54,10 +57,60 @@ const appendPageLinks = (list) => {
     ul.appendChild(li);
     li.appendChild(a);
   }
+  //Give the first anchor tag the 'active' class
+  if (document.querySelectorAll('a') !== null) {
+    let a = document.querySelectorAll('a');
+    a[0].className = 'active';
+  }
+
+  //Event listener to display the correct students when anchor tags are clicked
+  paginationDiv.addEventListener('click', (event) => {
+    if (event.target.tagName == 'A') {
+      pageNumber = parseInt(event.target.textContent);
+      showPage(list, pageNumber);
+      //Makes sure only the clicked anchor tag has the 'active' class
+      let a = document.querySelectorAll('a');
+      for (let i = 0; i < numberOfPages; i += 1) {
+        a[i].classList.remove('active');
+      }
+      event.target.className = 'active';
+    }
+  });
 }
 
 appendPageLinks(students);
 
+//Create search box and button
+const searchDiv = document.createElement('div');
+searchDiv.className = 'student-search';
+const searchInput = document.createElement('input');
+searchInput.placeholder = 'Search for students...';
+const searchButton = document.createElement('button');
+searchButton.textContent = 'Search';
+pageHeaderDiv.appendChild(searchDiv);
+searchDiv.appendChild(searchInput);
+searchDiv.appendChild(searchButton);
 
-// Add functionality to the pagination buttons so that they show and hide the correct items
-// Tip: If you created a function above to show/hide list items, it could be helpful here
+//Search functionality
+const searchFunction = (results, students, studentDetails) => {
+  results = [];
+  for (let i = 0; i < students.length; i += 1) {
+    if (studentDetails[i].textContent.toUpperCase().indexOf(searchInput.value.toUpperCase()) !== -1) {
+      results.push(students[i]);
+      students[i].style.display = 'block';
+    } else {
+      students[i].style.display = 'none';
+    }
+  }
+  pageNumber = 1;
+  showPage(results, pageNumber);
+  appendPageLinks(results);
+}
+
+searchInput.addEventListener('keyup', () => {
+  searchFunction(results, students, studentDetails);
+});
+
+searchButton.addEventListener('click', () => {
+  searchFunction(results, students, studentDetails);
+});
